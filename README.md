@@ -1,7 +1,7 @@
 # study-notes-cpp
 study notes for c++ （缓慢更新中）
 
-###　C++ primer
+### C++ primer
 
 《C++ Primer》阅读笔记 
 
