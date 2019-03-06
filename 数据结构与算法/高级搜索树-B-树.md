@@ -1,5 +1,7 @@
 # 高级搜索树
 
+[清华大学 邓俊辉 数据结构](http://www.xuetangx.com/courses/course-v1:TsinghuaX+30240184_2X+sp/about)
+
 ## B-树
 
 ### 动机
