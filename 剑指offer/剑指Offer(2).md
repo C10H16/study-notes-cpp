@@ -1,4 +1,4 @@
-# 剑指offer
+# 数组、字符串
 
 ##　数组
 
@@ -220,6 +220,138 @@ int main()
 		delete[] arr[i];
 	}
 	delete[] arr;
+	return 0;
+}
+```
+
+## 字符串
+
+注意，字符串末尾有一个'\0'字符，比看上去多一个字节。
+
+### 替换字符串中的空格
+
+> 实现一个函数，把字符串中的每个空格替换成‘%20’
+
+考虑不借助辅助空间的情况，如果从左至右扫描，每当遇到空格就将空格改为‘%20’，则每次都需要将空格后的字符串后移2位，时间复杂度为O(n^2)。可以先扫描以便字符串，计算出空格的数量 n，则更改后字符串的长度增加 2*n。然后从后向前将字符串中的每个字符放入相应的位置。这样的时间复杂度为 O(n)。此时要考虑原字符串后有没有足够的空余内存。
+
+```C++
+#include <iostream>
+#define LEN 200
+using namespace std;
+void ReplaceBlank(char str[], int length)
+{
+	if (str==nullptr||length<=0)
+	{
+		return;
+	}
+	
+	int originalLength = 0;
+	int numberOfBlank = 0;
+	int i = 0;
+	while(str[i] != '\0')
+	{
+		++originalLength;
+		if (str[i] == ' ')
+		{
+			++numberOfBlank;
+		}
+		++i;
+	}
+	int newLength = originalLength + 2 * numberOfBlank;
+	if (newLength > length)
+	{
+		return;
+	}
+	int indexOfOriginal = originalLength;
+	int indexOfNew = newLength;
+	while (indexOfOriginal >= 0 && indexOfNew > indexOfOriginal)
+	{
+		if(str[indexOfOriginal] == ' ')
+		{			
+			str[indexOfNew--] = '0';
+			str[indexOfNew--] = '2';
+			str[indexOfNew--] = '%';
+		}
+		else
+		{
+			str[indexOfNew--] = str[indexOfOriginal];			
+		}
+		--indexOfOriginal;
+	}
+}
+int main()
+{
+	char str[LEN];
+	char a;
+	int i = 0;
+	gets(str);
+	ReplaceBlank(str, LEN);
+	i = 0;
+	while(str[i] != '\0')
+	{
+		cout << str[i];
+		++i;
+	}
+	return 0;
+}
+```
+
+### 合并两个数组（字符串）
+
+> 两个排序数组A1和A2，在A1尾部有足够空间容纳A2，把A2所有数字插入A1中，且所有数字是排序的
+
+可以使用和上一题同样的方法，从后向前将A2插入A1。
+
+在合并两个数组或字符串时，都可以使用这个方法，减少移动次数，提高效率。
+
+```C++
+#include <iostream>
+using namespace std;
+void insertToList (int *a1, int *a2, int l1, int l2)
+{
+	if (a1 == nullptr || a2 == nullptr )
+		return;
+	int newLength = l1 + l2;
+	int indexOfNew = newLength-1;
+	int indexOfOriginal = l1-1;
+	int i = l2-1;
+	while(i >= 0 && indexOfNew >= 0)
+	{
+		
+		if (indexOfOriginal >= 0 && a1[indexOfOriginal] < a2[i])
+		{
+			a1[indexOfNew--] = a2[i--];
+		}
+		else if(indexOfOriginal >= 0)
+		{
+			a1[indexOfNew--] = a1[indexOfOriginal--];
+		}
+		else
+		{
+			a1[indexOfNew--] = a2[i--];
+		}
+	}
+}
+
+int main()
+{
+	int l1, l2;
+	cin >> l1 >> l2;
+	int *a1 = new int[l1+l2];
+	int *a2 = new int[l2];
+	for(int i = 0; i < l1; ++i)
+	{
+		cin >> a1[i];
+	}
+	for(int i = 0; i < l2; ++i)
+	{
+		cin >> a2[i];
+	}
+	insertToList(a1, a2, l1, l2);
+	for(int i = 0; i < l1 + l2; ++i)
+	{
+		cout << a1[i] << " ";
+	}
 	return 0;
 }
 ```
