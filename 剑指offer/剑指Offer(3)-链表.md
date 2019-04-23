@@ -18,7 +18,7 @@ void AddToTail(ListNode** pHead, int value) // 向空表中插入新节点时，
     pNew->m_nValue = value;
     pNew->m_pNext = nullptr;
     
-    if (pHead == nullptr)
+    if (*pHead == nullptr)
     {
         *pHead = pNew;
     }
@@ -47,7 +47,7 @@ void RemoveNode(ListNode** pHead, int value)
     else
     {
         ListNode* pNode = *pHead;
-        while(pHead->m_pNext!=nullptr&&pNode->m_pNext->m_nValue!=value)
+        while(pNode->m_pNext!=nullptr&&pNode->m_pNext->m_nValue!=value)
         {
             pNode = pNode->m_pNext;
         }
@@ -78,3 +78,111 @@ struct ListNode
 ```
 
 访问链表的节点顺序是从前往后的，而打印节点的值的顺序是从后往前的，这时典型的先进后出。因此，可以使用栈来实现。而递归在本质上就是一个栈结构，因此也可以使用递归来实现。但是，当链表的长度很长时，使用递归可能会导致函数调用栈溢出。
+
+```C++
+#include <iostream>
+#include <stack>
+using namespace std;
+
+struct ListNode
+{
+	int m_nKey;
+	ListNode* m_pNext;
+};
+void AddToTail(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nKey = value;
+    pNew->m_pNext = nullptr;
+    
+    if (*pHead == nullptr)
+    {
+        *pHead = pNew;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = pNew;
+    }
+}
+
+void RemoveNode(ListNode** pHead, int value)
+{
+    if(pHead == nullptr||*pHead ==nullptr)
+        return;
+    ListNode* pToBeDeleted = nullptr;
+    if((*pHead)->m_nKey == value)
+    {
+        pToBeDeleted = *pHead;
+        *pHead = (*pHead)->m_pNext;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr && pNode->m_pNext->m_nKey!=value)
+        {
+            pNode = pNode->m_pNext;
+        }
+        if(pNode->m_pNext!=nullptr&&pNode->m_pNext->m_nKey==value)
+        {
+            pToBeDeleted = pNode->m_pNext;
+            pNode->m_pNext = pNode->m_pNext->m_pNext;
+        }
+    }
+    if(pToBeDeleted!=nullptr)
+    {
+        delete pToBeDeleted;
+        pToBeDeleted = nullptr;
+    }
+}
+
+void PrintListReversingly_Iteratively(ListNode* pHead)
+{
+	stack<ListNode*> nodes;
+	ListNode* pNode = pHead;
+	while(pNode != nullptr)
+	{
+		nodes.push(pNode);
+		pNode = pNode->m_pNext;
+	}
+	while (!nodes.empty())
+	{
+		pNode = nodes.top();
+		cout << pNode->m_nKey << " ";
+		nodes.pop();
+	}
+}
+void PrintListReversingly_Recursively(ListNode* pHead)
+{
+	if(pHead != nullptr)
+	{
+		if(pHead->m_pNext != nullptr)
+		{
+			PrintListReversingly_Recursively(pHead->m_pNext);
+		}
+		cout << pHead->m_nKey << " ";
+	}
+}
+int main()
+{
+	int n, temp;
+	cin >> n;
+	ListNode* pHead = nullptr;
+	ListNode** p;
+	p = &pHead;
+	for(int i = 0; i < n; ++i)
+	{
+		cin >> temp;
+		AddToTail(p,temp);
+	}
+	PrintListReversingly_Iteratively(pHead);
+	cout << endl;
+	PrintListReversingly_Recursively(pHead);
+	return 0;	
+}
+```
+
