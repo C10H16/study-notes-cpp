@@ -115,3 +115,77 @@ int main()
 }
 ```
 
+当数组为 {1，1，1，0，1} 或{1，0，1，1，1}等形式时，上面的方法则不能找出数组中的最小值。
+
+```C++
+// v2
+// 迭代实现，若出现上述情况则只能顺序查找。
+#include <iostream>
+using namespace std;
+
+int MinInOrder(int* num, int index1, int index2)
+{
+	int min = num[index1];
+	for (int i = index1+1; i <= index2; ++i)
+	{
+		if (num[i] < min)
+			min = num[i];
+	}
+	return min;
+} 
+int findMin(int *num, int length)
+{
+	if (num == nullptr || length <=0)
+	{
+		throw ("Invalid parameters");
+	}
+	int index1 = 0;
+	int index2 = length -1;
+	int indexMid = index1;
+	while (num[index1]>=num[index2])
+	{
+		if (index2 - index1 == 1)
+		{
+			indexMid = index2;
+			break;
+		}
+		indexMid = (index1 + index2)/2;
+		if (num[index1]==num[index2]&&num[indexMid]==num[index1]) // 三个数字相等时，只能顺序查找 
+		{
+			return MinInOrder(num,index1,index2);
+		}
+		if (num[indexMid]>=num[index1])
+		{
+			index1 = indexMid;
+		}
+		else if(num[indexMid]<=num[index2])
+		{
+			index2 = indexMid;
+		}
+	}
+	return num[indexMid];
+}
+
+
+
+int main()
+{
+	int n;
+	cin >> n;
+	int* num = new int[n];
+	for (int i = 0; i < n; ++i)
+	{
+		cin >> num[i];
+	}
+	cout << findMin(num, n);
+	delete[] num;
+	return 0;
+}
+```
+
+## 回溯法
+
+回溯法适合由多个步骤组成的问题，每个步骤都有多个选项。当我们在某一步选择了其中一项时，就进入下一步，直到达到最终状态。如果最终状态不满足条件，则回退到上一步，选择别的选项。当这一步的所有选项都不能满足条件，则再次回退到上一步。如果所有选项都不满足，则该问题无解。
+
+
+
