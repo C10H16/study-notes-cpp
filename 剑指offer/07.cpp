@@ -56,7 +56,7 @@ BinaryTreeNode* Construct(int* preorder, int* inorder, int length)
 void printTree (BinaryTreeNode* root)
 {
 	queue<BinaryTreeNode*> node;
-	cout << root->m_nValue << endl;
+	cout << root->m_nValue << " ";
 	node.push(root->m_pLeft);
 	node.push(root->m_pRight);
 	while(!node.empty())
