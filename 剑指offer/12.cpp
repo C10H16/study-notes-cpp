@@ -54,6 +54,10 @@ bool hasPath( char** matrix, int rows, int cols, char* str)
             }
         }
     }
+    for (int i = 0; i < rows; ++i)
+    {
+        delete[] visited[i];
+    }
     delete[] visited;
     return false;
 }
