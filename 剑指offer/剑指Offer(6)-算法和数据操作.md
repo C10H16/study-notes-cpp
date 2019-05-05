@@ -374,3 +374,96 @@ int main()
 }
 ```
 
+## 动态规划与贪婪算法
+
+### 动态规划
+
+如果要求一个问题的最优解，且该问题能够分解成若干个子问题，且子问题之间还有重叠的更小的子问题，则可以考虑使用动态规划。使用动态规划时，需要分析能否把大问题分解成小问题，每个小问题也要存在最优解。且如果把小问题的最优解组合起来能够得到整个问题的最优解，就可以使用动态规划。
+
+### 贪婪算法
+
+使用贪婪算法解决问题时，每一步都可以做出一个贪婪的选择。基于这个选择，我们确定能够得到最优解。使用贪婪算法时，需要用数学方式来证明贪婪选择是正确的。
+
+###　剪绳子
+
+> 一段长度为n的绳子，剪成m段（m,，n都是整数，且m>1，n>1）。每段绳子的长度记为k[0]，k[1]，...k[m]，求k[0]\*k[1]\*...\*k[m]的最大值。
+
+#### 动态规划法
+
+可以设`f(n)=max(f(i)*f(n-i))`
+
+可以先得到f(2)、f(3)，再计算f(4)，f(5)，直到得到f(n)
+
+当绳子长度为2时，只能剪成长度为1的两段，因此，f(2) = 1
+
+当绳子长度为3时，可以剪成长度为1和2或1，1和1，f(3) = 2
+
+#### 贪婪算法
+
+因为当绳子长度大于3时，如4，分成2\*2时最优，5，分成2\*3时最优……因此，将绳子尽可能分成长度为3的绳子，而绳子长度剩下4时，则分成2*2的绳子。
+
+```C++
+#include <iostream>
+#include <math.h>
+using namespace std;
+int maxProduct_1(int length) //动态规划
+{
+    if (length < 2)
+    return 0;
+    else if(length == 2)
+    return 1;
+    else if(length ==3)
+    return 2;
+
+    int *products = new int[length+1]; // 存储最优解
+    products[0] = 0;
+    products[1] = 1;
+    products[2] = 2;
+    products[3] = 3;
+
+    int max = 0;
+    for(int i = 4; i <= length; ++i)
+    {
+        max = 0;
+        for(int j = 1; j <= i/2; ++j)
+        {
+            int product = products[j]*products[i-j];
+            if (product > max)
+            {
+                max = product;
+            }
+        }
+        products[i] = max;
+    }
+    max = products[length];
+    delete[] products;
+    return max;
+}
+
+int maxProduct_2(int length) // 贪婪算法
+{
+    if (length < 2)
+        return 0;
+    else if(length == 2)
+        return 1;
+    else if(length ==3)
+        return 2;
+
+    int timesOf3 = length/3;
+    if (length - 3*timesOf3 == 1) // 如果会剩下长度为4的绳子，则不能分成1*3
+    {
+        timesOf3 -= 1;
+    }
+    int timesOf2 = (length - 3*timesOf3)/2;
+    return (int) (pow(3,timesOf3))*(int)(pow(2,timesOf2));
+}
+int main()
+{
+    int length;
+    cin >> length;
+    cout << "method_1: " << maxProduct_1(length) << endl;
+    cout << "method_2: " << maxProduct_2(length) << endl;
+    return 0; 
+}
+```
+
