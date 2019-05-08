@@ -216,3 +216,154 @@ int main()
 }
 ```
 
+### 删除链表的节点
+
+#### 题目一：在O(1)时间内删除链表节点
+
+> 给定单向链表的头指针和一个节点指针，定义一个函数在O(1)时间内删除该节点。链表节点与函数的定义如下：
+
+```C++
+struct ListNode
+{
+    int m_nValue;
+    ListNode* m_pNext;
+};
+void DeleteNode(List** pListHead, ListNode* pToBeDeleted);
+```
+
+单向链表中删除节点需要将被删除节点的前一节点连接到被删除节点的下一节点，这就需要从头开始寻找被删除节点的前以节点，这样的实现复杂度为O(n)。可以将被删除节点的下一节点的值赋给被删除节点，然后删除被删除节点的下一节点，这样就可以在O(1)内完成删除。但是当要删除的节点为尾节点时，只能从头节点开始依次寻找。
+
+总平均复杂度为 [(n-1)*O(1)+O(n)]/n = O(1)
+
+```C++
+#include <iostream>
+using namespace std;
+struct ListNode
+{
+    int m_nValue;
+    ListNode* m_pNext;
+};
+
+void AddToTail(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nValue = value;
+    pNew->m_pNext = nullptr;
+    
+    if (*pHead == nullptr)
+    {
+        *pHead = pNew;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = pNew;
+    }
+}
+
+void PrintList(ListNode* pHead)
+{
+    ListNode* p = pHead;
+    while (p)
+    {
+        cout << p->m_nValue << " ";
+        p = p->m_pNext;
+    }
+    cout << endl;
+}
+
+void DeleteNode(ListNode** pListHead, ListNode* pToBeDeleted)
+{
+    if (!pToBeDeleted||!pListHead)
+    {
+        return;
+    }
+    if (pToBeDeleted->m_pNext != nullptr) // 如果不是尾节点
+    {
+        ListNode* pToBeDeletedNext = pToBeDeleted->m_pNext;
+        pToBeDeleted->m_nValue = pToBeDeleted->m_pNext->m_nValue;
+        pToBeDeleted->m_pNext = pToBeDeleted->m_pNext->m_pNext;
+
+        delete pToBeDeletedNext;
+        return;
+    }
+    else if (pToBeDeleted == *pListHead) // 要删除的节点是尾节点又是头节点（即链表只有一个节点）
+    {
+        delete pToBeDeleted;
+        pToBeDeleted = nullptr;
+        *pListHead = nullptr;
+        return;
+    }
+    else
+    {
+        ListNode* pNode = *pListHead;
+        while (pNode->m_pNext != pToBeDeleted)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = nullptr;
+        delete pToBeDeleted;
+        pToBeDeleted = nullptr;
+        return;
+    }
+    
+}
+
+int main()
+{
+	int n, temp;
+    cin >> n;
+    while (n<3)
+    {
+        cout << "n must bigger than 3";
+        cin >> n;
+    }
+	ListNode* pHead = nullptr;
+	ListNode** p;
+	p = &pHead;
+    ListNode* d1, *d2, *d3,*ptemp;
+    
+	for(int i = 0; i < n; ++i)
+	{
+		cin >> temp;
+		AddToTail(p,temp);
+	}
+    ptemp = pHead;
+    for (int i = 0; i < n; ++i)
+    {
+        if (i == 0)
+            d3 = ptemp;
+        if (i == n/2)
+            d1 = ptemp;
+        if (i == n-1)
+            d2 = ptemp;
+        ptemp = ptemp->m_pNext;
+    }
+    // 删除分别删除链表的中间、头、尾节点。
+    PrintList(pHead);
+    DeleteNode(p,d1);
+	PrintList(pHead);
+    DeleteNode(p,d2);
+    PrintList(pHead);
+    DeleteNode(p,d3);
+    PrintList(pHead);
+    d1 = nullptr;
+    d2 = nullptr;
+    d3 = nullptr;
+    ptemp = pHead;
+    p = nullptr;
+    while (ptemp)
+    {
+        ptemp = ptemp->m_pNext;
+        delete pHead;
+        pHead = ptemp;
+    }
+
+	return 0;	
+}
+```
+
