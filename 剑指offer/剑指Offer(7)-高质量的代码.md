@@ -367,3 +367,123 @@ int main()
 }
 ```
 
+#### 题目二：删除链表中的重复节点
+
+> 在一个排序链表中，删除重复的节点。
+
+首先要确定函数的参数。因为头节点可能和后面的节点重复而被删除，因此传入的参数应该为指向头节点指针的指针，而不是头节点的指针。
+
+接下来从头开始遍历整个链表，如果当前节点的值与下一个节点的值相同，则它们为重复的节点，可以删掉。这时需要将当前节点的前一个节点和第一个大于当前节点的节点相连。
+
+```C++
+#include <iostream>
+using namespace std;
+struct ListNode
+{
+    int m_nValue;
+    ListNode* m_pNext;
+};
+
+void AddToTail(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nValue = value;
+    pNew->m_pNext = nullptr;
+    
+    if (*pHead == nullptr)
+    {
+        *pHead = pNew;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = pNew;
+    }
+}
+
+void PrintList(ListNode* pHead)
+{
+    ListNode* p = pHead;
+    while (p)
+    {
+        cout << p->m_nValue << " ";
+        p = p->m_pNext;
+    }
+    cout << endl;
+}
+
+void deleteDuplication(ListNode** pHead)
+{
+    if(pHead == nullptr || *pHead == nullptr)
+        return;
+    ListNode* pPreNode = nullptr;
+    ListNode* pNode = *pHead;
+    while (pNode != nullptr)
+    {
+        ListNode *pNext = pNode->m_pNext;
+        bool needDelete = false;
+        if(pNext != nullptr && pNext->m_nValue == pNode->m_nValue)
+            needDelete = true;
+        if(!needDelete)
+        {
+            pPreNode = pNode;
+            pNode = pNode->m_pNext;
+        }
+        else
+        {
+            int value = pNode->m_nValue;
+            ListNode* pToBeDel = pNode;
+            while(pToBeDel != nullptr && pToBeDel->m_nValue == value)
+            {
+                pNext = pToBeDel->m_pNext;
+
+                delete pToBeDel;
+                pToBeDel = nullptr;
+                pToBeDel = pNext;
+            }
+            if (pPreNode == nullptr)
+            {
+                *pHead = pNext;
+            }
+            else
+            {
+                pPreNode->m_pNext = pNext;
+            }
+            pNode = pNext;
+        }
+        
+    }
+}
+
+int main()
+{
+	int n, temp;
+    cin >> n;
+	ListNode* pHead = nullptr;
+	ListNode** p;
+	p = &pHead;
+    ListNode* ptemp;
+	for(int i = 0; i < n; ++i)
+	{
+		cin >> temp;
+		AddToTail(p,temp);
+	}
+    PrintList(pHead);
+    deleteDuplication(p);
+    PrintList(pHead);
+    ptemp = pHead;
+    p = nullptr;
+    while (ptemp)
+    {
+        ptemp = ptemp->m_pNext;
+        delete pHead;
+        pHead = ptemp;
+    }
+	return 0;	
+}
+```
+
