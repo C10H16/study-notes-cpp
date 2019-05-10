@@ -487,3 +487,69 @@ int main()
 }
 ```
 
+### 正则表达式匹配
+
+> 实现一个用函数来匹配包含 "." 和 "\*" 的正则表达式。模式中的字符 "." 表示任意一个字符，而 "\*"表示它前面的字符可以出现任意次（含0次），在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串 "aaa" 与模式 "a.a" 和 "ab\*ac\*a" 匹配，但与 "aa.a" 和 "ab\*a" 均不匹配。
+
+字符串当前字符与模式串中当前字符相等或模式串中字符为 "." 时，可直接比较下一位。
+
+当模式串当前字符的下一字符为 "*" 时，有三种可能需要考虑，一种是模式串与字符串的当前字符相等，且字符串的当前字符连续出现n次。第二种是模式串与字符串当前字符相等，而字符串的下一字符与当前字符不等。第三种是忽略模式串的当前字符（即出现0次）
+
+要注意字符串"abcde" 与模式串 "ab\*c\*...e"是匹配的，因为可以忽略"b\*"和"c\*",而"..."匹配字符串中的"bcd"。
+
+```C++
+#include <iostream>
+using namespace std;
+
+bool matchCore(char* str, char* pattern)
+{
+    if (*str == '\0' && *pattern == '\0')
+        return true;
+    if (*str != '\0' && *pattern == '\0')
+        return false;
+    if (*(pattern + 1) == '*')
+    {
+        if (*pattern == *str || (*pattern == '.' && *str != '\0'))
+        {
+            return matchCore(str+1, pattern+2) // move to the next state
+                || matchCore(str+1, pattern) // stay on current state
+                || matchCore(str, pattern+2); // ignore a'*'
+        }
+        else
+        {
+            return matchCore(str, pattern + 2); // ignore a '*'
+        }
+    }
+    if (*str == *pattern || (*pattern == '.' && *str != '\0'))
+        return matchCore(str + 1, pattern+1);
+    return false;
+}
+
+bool match(char* str, char* pattern)
+{
+    if (str == nullptr || pattern == nullptr)
+        return false;
+    matchCore(str, pattern);
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    char* str = new char[n+1];
+    for(int i = 0; i < n; ++i)
+    {
+        cin >> str[i];
+    }
+    str[n] = '\0';
+    cin >> n;
+    char* pattern = new char[n+1];
+    for(int i = 0; i < n; ++i)
+    {
+        cin >> pattern[i];
+    }
+    pattern[n] = '\0';
+    cout << match(str, pattern);
+}
+```
+
