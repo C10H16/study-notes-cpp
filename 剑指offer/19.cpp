@@ -51,5 +51,5 @@ int main()
     pattern[n] = '\0';
 
     cout << match(str, pattern);
-    
+    return 0; 
 }
