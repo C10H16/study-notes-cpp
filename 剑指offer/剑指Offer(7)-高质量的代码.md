@@ -550,6 +550,75 @@ int main()
     }
     pattern[n] = '\0';
     cout << match(str, pattern);
+    return 0;
 }
 ```
+
+### 表示数值的字符串
+
+> 实现一个函数，用来判断字符串是否表示数值（包括整数和小数，例如，字符串“+100”、“5e2”、“-123”、“3.1416”、“-1E-16”都表示数值，但“12e”、“1a3.14”、“1.2.3”、“+-5”以及“12e+5.4”都不是。
+
+表示数值的字符串遵循模式A[.\[B\]][e|EC]或者.B[e|EC]，其中，A为数值的整数部分，B为紧跟着小数点为数值的小数部分，C紧跟着‘e’或‘E’，为数值的指数部分。在小数里可能没有数值的整数部分，因此，A部分不是必须的。如果一个数没有整数部分，则它的小数部分不能为空。A和C都是可以以‘+’或‘-’开头的0-9组成的数位串，而B中只有0-9。
+
+在扫描时，从头开始，扫描A部分，如果遇到小数点，则开始扫描B部分，如果遇到‘e’或‘E’，则开始扫描C部分。
+
+```C++
+#include <iostream>
+#include <string>
+using namespace std;
+bool scanUnsignedInteger(const char** str)
+{
+    const char* before = *str;
+    while (**str != '\0' && **str >= '0' && **str <= '9')
+    {
+        ++(*str);
+    }
+    return *str>before;
+}
+bool scanInteger(const char** str)
+{
+    if (**str=='+'||**str=='-')
+        ++(*str);
+    return scanUnsignedInteger(str);
+}
+bool isNumeric(const char* str)
+{
+    if (str==nullptr)
+    {
+        return false;
+    }
+    bool numeric = scanInteger(&str);
+    // 如果出现'.'，接下来是数字的小数部分
+    if (*str == '.')
+    {
+        ++str;
+        // 下面代码用||的原因：
+        // 1.小数可以没有整数部分，如 .123 等于 0.123
+        // 2.小数点后面可能没有数字，如 233. 等于 233.0
+        // 3.小数点后面可能有数字，233.666
+        numeric = scanUnsignedInteger(&str) || numeric;
+    }
+
+    // 如果出现 'e' 或 'E'，则接下来是数字的整数部分
+    if (*str == 'e' || *str == 'E')
+    {
+        ++str;
+        // 下面代码使用&&的原因：
+        // 1.当 e 或 E 前面没有数字时，整个字符串不能表示数字，如.e1，e1
+        // 2.当 e 或 E 后面没有整数时，整个字符串不能表示数字，如12e，12e+5.4
+        numeric = numeric && scanInteger(&str);
+    }
+    return numeric && *str == '\0';
+}
+
+int main()
+{
+    string test;
+    cin >> test;
+    cout << isNumeric(&test[0]) << endl;
+    return 0;
+}
+```
+
+
 
