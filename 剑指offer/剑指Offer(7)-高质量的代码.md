@@ -620,5 +620,91 @@ int main()
 }
 ```
 
+### 调整数组顺序使奇数位于偶数前面
+
+> 输入一个整数数组，实现一个函数来调整改数组中数字的顺序，使得所有奇数位于数组的前半部分，偶数位于数组的后半部分。
+
+使用两个指针，一个从前往后扫描数组，一个从后往前扫描，当前面的指针指向的元素为偶数，且后面的指针指向的元素为奇数时，交换两个元素的值，直到两个指针重合，结束循环。
+
+```C++
+#include <iostream>
+using namespace std;
+
+void ReorderOddEven(int *nums, unsigned length)
+{
+    if (nums == nullptr || length == 0)
+        return;
+    int* p_left = nums;
+    int* p_right = nums+length-1;
+    int temp;
+    while (p_left < p_right)
+    {
+        while (p_left < p_right && *p_left%2!=0)
+        {
+            ++p_left;
+        }
+        while (p_left < p_right && *p_right%2==0)
+        {
+            --p_right;
+        }
+        if (p_left < p_right)
+        {
+            temp = *p_left;
+            *p_left = *p_right;
+            *p_right = temp;
+        }
+    }
+}
+
+int main()
+{
+    int n = 0;
+    cin >> n;
+    int *nums = new int[n];
+    for(int i = 0; i < n; ++i)
+    {
+        cin >> nums[i];
+    }
+    ReorderOddEven(nums, n);
+    for(int i = 0; i < n; ++i)
+    {
+        cout << nums[i] << " ";
+    }
+    return 0;
+}
+
+//修改版，可扩展性更强
+bool isEven(int n)
+{
+    return n%2!= 0 ? 1:0;
+}
+
+void ReorderOddEven(int *nums, unsigned length)
+{
+    if (nums == nullptr || length == 0)
+        return;
+    int* p_left = nums;
+    int* p_right = nums+length-1;
+    int temp;
+    while (p_left < p_right)
+    {
+        while (p_left < p_right && isEven(*p_left))
+        {
+            ++p_left;
+        }
+        while (p_left < p_right && !isEven(*p_right))
+        {
+            --p_right;
+        }
+        if (p_left < p_right)
+        {
+            temp = *p_left;
+            *p_left = *p_right;
+            *p_right = temp;
+        }
+    }
+}
+```
+
 
 
