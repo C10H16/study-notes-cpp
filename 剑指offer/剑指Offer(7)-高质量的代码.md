@@ -706,5 +706,105 @@ void ReorderOddEven(int *nums, unsigned length)
 }
 ```
 
+## 代码的鲁棒性
 
+防御性编程：预见在什么地方可能会出现问题，并为这些可能的问题制定处理方式。例如，试图打开文件时，发现文件不存在，可以提示用户检查文件名和路径。当服务器连接不上时，试图连接备用服务器等。
+
+### 链表中倒数第k个节点
+
+> 输入一个链表，输出该链表中倒数第k个节点。为了复合大多数人的习惯，本题从1开始计数。即链表的尾节点是倒数第一个节点。节点定义如下：
+
+```C++
+struct ListNode
+{
+    int m_nValue;
+    ListNode* m_pNext;
+}
+```
+
+在已知链表长度的情况下，可以计算出链表中倒数第k个节点是链表的第几个节点，但是这样就需要扫描两遍链表，第一遍找出链表的长度，第二遍找到该节点。
+
+另一种方法是，使用两个指针，第一个指针从头节点开始往后移动，当移动到第k个时，第二个指针从头节点和第一个指针一起移动。当第一个指针移动到链表末尾时，第二个指针指向的节点就是链表的倒数第k个节点。
+
+```C++
+#include <iostream>
+using namespace std;
+struct ListNode
+{
+    int m_nValue;
+    ListNode* m_pNext;
+};
+
+ListNode* FindKthToTail(ListNode* pListHead, unsigned int k)
+{
+    if (pListHead == nullptr || k == 0)
+    {
+        return nullptr;
+    }
+    ListNode* pAhead = pListHead;
+    ListNode* pBehind = nullptr;
+    for (int i = 0; i < k-1; ++i)
+    {
+        if (pAhead->m_pNext != nullptr)
+        {
+            pAhead = pAhead->m_pNext;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    pBehind = pListHead;
+    while (pAhead->m_pNext != nullptr)
+    {
+        pAhead = pAhead->m_pNext;
+        pBehind = pBehind->m_pNext;
+    }
+    return pBehind;
+}
+
+void AddToTail(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nValue = value;
+    pNew->m_pNext = nullptr;
+    
+    if (*pHead == nullptr)
+    {
+        *pHead = pNew;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = pNew;
+    }
+}
+
+int main()
+{
+    int n, k;
+    cin >> n >> k;
+    ListNode* pHead = nullptr;
+	ListNode** p;
+	p = &pHead;
+    int temp;
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> temp;
+        AddToTail(p, temp);
+    }
+    ListNode* re = FindKthToTail(pHead, k);
+    if (re)
+        cout << re->m_nValue << endl;
+    else
+    {
+        cout << "Error";
+    }
+    return 0;
+}
+```
 
