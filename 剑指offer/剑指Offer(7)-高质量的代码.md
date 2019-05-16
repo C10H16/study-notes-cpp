@@ -808,3 +808,139 @@ int main()
 }
 ```
 
+### 链表中环的入口节点
+
+> 题目：如果一个链表中包含环，如果找出环的入口节点。
+
+可以使用一快一慢两个指针，当快指针和慢指针重合时，说明链表中有环。当两个节点重合时，这个节点一定在环中。从这个节点出发，边移动边计数，再次回到这个节点时，就可以得到环中节点的数目。
+
+同样的，使用两个指针，假设环中有n个节点，使快指针先向前走n个节点，然后两个指针同时移动，当两个指针重合的节点即是入口节点。
+
+```C++
+#include <iostream>
+using namespace std;
+struct ListNode
+{
+    int m_nValue;
+    ListNode* m_pNext;
+};
+
+ListNode* MeetingNode(ListNode* pHead)
+{
+    if (pHead == nullptr)
+    {
+        return nullptr;
+    }
+    ListNode* pSlow = pHead->m_pNext;
+    if (pSlow == nullptr)
+        return nullptr;
+    ListNode* pFast = pSlow->m_pNext;
+    while (pFast != nullptr && pSlow != nullptr)
+    {
+        if (pFast == pSlow)
+        {
+            return pFast;
+        }
+        pSlow = pSlow->m_pNext;
+        pFast = pFast->m_pNext;
+        if (pFast != nullptr)
+        {
+            pFast = pFast->m_pNext;
+        }
+    }
+    return nullptr;
+}
+
+ListNode* EntryNodeOfLoop(ListNode* pHead)
+{
+    ListNode* meetingNode = MeetingNode(pHead);
+    if (meetingNode == nullptr)
+    {
+        return nullptr;
+    }
+    // 得到环中节点数目
+    int nodesInLoop = 1;
+    ListNode* pNode1 = meetingNode;
+    while(pNode1->m_pNext != meetingNode)
+    {
+        pNode1 = pNode1->m_pNext;
+        ++nodesInLoop;
+    }
+    // 先移动Node1，次数与环中节点数目相同
+    pNode1 = pHead;
+    for(int i = 0; i < nodesInLoop; ++i)
+    {
+        pNode1 = pNode1->m_pNext;
+    }
+    // 再移动Node1和Node2
+    ListNode* pNode2 = pHead;
+    while(pNode1 != pNode2)
+    {
+        pNode1 = pNode1->m_pNext;
+        pNode2 = pNode2->m_pNext;
+    }
+    return pNode1;
+}
+
+void AddToTail(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nValue = value;
+    pNew->m_pNext = nullptr;
+    
+    if (*pHead == nullptr)
+    {
+        *pHead = pNew;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = pNew;
+    }
+}
+
+int main()
+{
+    int n, k;
+    cin >> n >> k;
+    ListNode* pHead = nullptr;
+	ListNode** p;
+	p = &pHead;
+    int temp;
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> temp;
+        AddToTail(p, temp);
+    }
+    // 构造环
+    ListNode* start = nullptr;
+    ListNode* tail = pHead;
+    for (int i = 1; i < n; ++i)
+    {
+        if (i==k)
+            start = tail;
+        tail = tail->m_pNext;
+    }
+    if (k==n)
+        tail->m_pNext = tail;
+    else
+        tail->m_pNext = start;
+    
+    ListNode* re = EntryNodeOfLoop(pHead);
+    if (re)
+    {
+        cout << re->m_nValue << endl;
+    }
+    else
+    {
+        cout << "Not found" << endl;
+    }
+    
+    return 0;
+}
+```
+
