@@ -944,3 +944,142 @@ int main()
 }
 ```
 
+### 反转列表
+
+>定义一个函数，输入一个链表的头节点，反转该链表并输出反转后链表的头节点。链表节点定义如下：
+
+```C++
+struct ListNode
+{
+    int m_nValue;
+    int m_pNext;
+}
+```
+
+直接对链表进行反转，即将当前节点的的Next指针指向前一个节点。同时，还需要记录指针原本指向的节点，防止链表断裂。因此，需要三个指针，分别指向前一节点、当前节点和后一节点。
+
+```C++
+#include <iostream>
+using namespace std;
+struct ListNode
+{
+    int m_nValue;
+    ListNode* m_pNext;
+};
+
+ListNode* ReverseList(ListNode* pHead)
+{
+    if (pHead == nullptr)
+        return nullptr;
+    ListNode* pReversedHead = nullptr;
+    ListNode* pNode = pHead;
+    ListNode* pPrev = nullptr;
+    ListNode* pNext = nullptr;
+    while (pNode != nullptr)
+    {
+        pNext = pNode->m_pNext;
+        
+        if (pNext == nullptr)
+        {
+            pReversedHead = pNode;
+        }
+        pNode->m_pNext = pPrev;
+
+        pPrev = pNode;
+        pNode = pNext;
+    }
+    return pReversedHead;
+
+}
+
+void AddToTail(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nValue = value;
+    pNew->m_pNext = nullptr;
+    
+    if (*pHead == nullptr)
+    {
+        *pHead = pNew;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = pNew;
+    }
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    ListNode* pHead = nullptr;
+	ListNode** p;
+	p = &pHead;
+    int temp;
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> temp;
+        AddToTail(p, temp);
+    }
+    
+    ListNode* re = ReverseList(pHead);
+    pHead = re;
+    while (re)
+    {
+        cout << re->m_nValue << " ";
+        re = re->m_pNext;
+    }
+    
+    return 0;
+}
+```
+
+#### 补充 头插法
+
+在创建列表时，将新节点插入头部，输出时为反向。如， 插入顺序为1->2->3->4->5，输出时为5->4->3->2->1。也可以使用这种方法反转链表。
+
+```C++
+void AddToHead(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nValue = value;
+    pNew->m_pNext = nullptr;
+    ListNode* pNode = *pHead;
+    if (pNode != nullptr)
+        pNew->m_pNext = pNode;
+    *pHead = pNew;
+}
+```
+
+#### 补充 尾插法
+
+将新节点插入链表的末尾，输出的顺序与插入时的顺序相同
+
+```C++
+void AddToTail(ListNode** pHead, int value)
+{
+    ListNode* pNew = new ListNode();
+    pNew->m_nValue = value;
+    pNew->m_pNext = nullptr;
+    
+    if (*pHead == nullptr)
+    {
+        *pHead = pNew;
+    }
+    else
+    {
+        ListNode* pNode = *pHead;
+        while(pNode->m_pNext != nullptr)
+        {
+            pNode = pNode->m_pNext;
+        }
+        pNode->m_pNext = pNew;
+    }
+}
+```
+
