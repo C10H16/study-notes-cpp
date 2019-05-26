@@ -295,3 +295,108 @@ int main()
 }
 ```
 
+### 顺时针打印矩阵
+
+>输入一个矩阵，按照从外向里以顺时针的次序一次打印出每一个数字。例如，输入如下矩阵
+>
+>1    2    3    4
+>
+>5    6    7    8
+>
+>9    10  11  12
+>
+>13  14  15  16
+>
+>则输出 1 2 3 4 8 12 16 15 1 4  13 9 5 6 7 11 10
+
+```C++
+#include <iostream>
+using namespace std;
+
+void PrintMatrixInCircle(int** matrix, int cols, int rows, int start)
+{
+	int endX = cols - 1 - start;
+	int endY = rows - 1 - start;
+
+	// 从左到右打印一行
+	// 肯定会执行
+	for (int i = start; i <= endX; ++i)
+	{
+		int number = matrix[start][i];
+		cout << number << " ";
+	}
+	
+	// 从上到下打印一列
+	// 终止行号需大于起始行号
+	if (start < endY)
+	{
+		for(int i = start + 1; i <= endY; ++i)
+		{
+			int number = matrix[i][endX];
+			cout << number << " ";
+		}
+	}
+
+	// 从右到左打印一行
+	// 打印的前提是至少有两行
+	if (start < endX && start < endY)
+	{
+		for(int i = endX-1; i >= start; --i)
+		{
+			int number = matrix[endY][i];
+			cout << number << " ";
+		}
+	}
+
+	// 从上到下打印一行
+	// 需要至少3行2列，即终止行号比起始行号至少大2
+	if (start < endX && start < endY -1)
+	{
+		for (int i = endY -1; i >= start + 1; --i)
+		{
+			int number = matrix[i][start];
+			cout << number << " ";
+		}
+	}
+}
+
+void PrintMatrixColockWisely(int** matrix, int cols, int rows)
+{
+	if (matrix == nullptr || cols <=0 || rows <=0)
+	{
+		return;
+	}
+	int start = 0;
+	while (cols > start * 2 && rows > start * 2) 
+        // 循环条件,开始行列号相同，且小于 总行数/2 和 总列数/2
+	{
+		PrintMatrixInCircle(matrix, cols, rows, start);
+		++start;
+	}
+}
+
+
+int main()
+{
+	int rows, cols;
+	cin >> rows >> cols;
+	int** matrix = new int*[rows];
+	for(int i = 0; i < rows; ++i)
+	{
+		matrix[i] = new int[cols];
+	}
+	for (int i = 0; i < rows; ++i)
+	{
+		for (int j = 0; j < cols; ++j)
+		{
+			cin >> matrix[i][j];
+		}
+	}
+
+	PrintMatrixColockWisely(matrix, cols, rows);
+	return 0;
+}
+```
+
+[相关题目：输入一个整数n，以顺时针的方式输出n*n的矩阵][https://github.com/C10H16/leetcode-note/blob/master/note/leetcode-54%2C59.md#leetcode-59-螺旋矩阵ⅱ]
+
