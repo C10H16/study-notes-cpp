@@ -479,3 +479,67 @@ int main()
 }
 ```
 
+### 栈的压入、弹出序列
+
+> 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，顺序{1,2,3,4,5}是某栈的压入序列，序列{5,4,3,2,1}是该压栈序列对应的一个弹出序列，而{4,3,5,1,2}就不可能是该压栈序列的弹出序列。
+
+借助一个辅助栈，把第一个序列中的数字一次压入该辅助栈，并和弹出序列进行比较。如果下一个弹出的数字刚好是栈顶数字，那么直接弹出。如果下一个弹出的数字不在栈顶，则把压栈序列中还没有入栈的数字压入辅助栈，直到把所有数字都压入栈后仍没有找到下一个弹出的数字，那么该序列不可能是一个弹出序列。
+
+```C++
+#include <iostream>
+#include <stack>
+using namespace std;
+
+bool IsPopOrder(const int* pPush, const int* pPop, int nLength)
+{
+    bool bPossible = false;
+    if (pPush != nullptr && pPop != nullptr && nLength > 0)
+    {
+        const int* pNextPush = pPush;
+        const int* pNextPop = pPop;
+        stack<int> stackData;
+        while (pNextPop - pPop < nLength)
+        {
+            while (stackData.empty()||stackData.top()!=*pNextPop)
+            {
+                if (pNextPush - pPush == nLength)
+                {
+                    break;
+                }
+                stackData.push(*pNextPush);
+                pNextPush++;
+            }
+            if (stackData.top() != *pNextPop)
+            {
+                break;
+            }
+            stackData.pop();
+            pNextPop++;
+        }
+
+        if (stackData.empty()&&pNextPop-pPop==nLength)
+        {
+            bPossible = true;
+        }
+    }
+    return bPossible;
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    int* pPush = new int[n];
+    int* pPop = new int[n];
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> pPush[i];
+    }
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> pPop[i];
+    }
+    cout << IsPopOrder(pPush, pPop, n);
+    return 0;
+}
+```
