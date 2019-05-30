@@ -738,3 +738,52 @@ int main()
 }
 ```
 
+### 题目三 之字形打印二叉树
+
+> 实现一个函数按照之字形顺序打印二叉树，第一行按照从左到右，第二行按照从右到左，第三行再从左到右，以此类推。
+
+按照之字形顺序打印需要两个栈，如果当前打印的是奇数层，则先存放左子节点，再存放右子节点到一个栈里。如果是打印偶数层，则先存放右子节点，再存放左子节点到另一个栈中。
+
+```C++
+void Print(BinaryTreeNode* pRoot)
+{
+    if (pRoot==nullptr)
+        return;
+    stack<BinaryTreeNode*> levels[2];
+    int current = 0;
+    int next = 1;
+
+    levels[current].push(pRoot);
+    while (!levels[0].empty()||!levels[1].empty())
+    {
+        BinaryTreeNode* pNode = levels[current].top();
+        levels[current].pop();
+
+        cout << pNode->m_nValue << " ";
+
+        if (current==0)
+        {
+            if (pNode->m_pLeft!=nullptr)
+                levels[next].push(pNode->m_pLeft);
+            if (pNode->m_pRight!=nullptr)
+                levels[next].push(pNode->m_pRight);
+        }
+        else
+        {
+            if (pNode->m_pRight != nullptr)
+                levels[next].push(pNode->m_pRight);
+            if (pNode->m_pLeft != nullptr)
+                levels[next].push(pNode->m_pLeft);
+        }
+
+        if (levels[current].empty())
+        {
+            cout << endl;
+            current = 1 - current;
+            next = 1 - next;
+        }
+        
+    }
+}
+```
+
