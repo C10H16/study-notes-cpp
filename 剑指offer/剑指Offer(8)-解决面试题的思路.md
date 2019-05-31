@@ -787,3 +787,57 @@ void Print(BinaryTreeNode* pRoot)
 }
 ```
 
+### 二叉搜索树的后序遍历序列
+
+> 输入一个整数数组，判断该数组是不是某二叉搜索树的后续遍历结果。如果是则返回true，否则返回false。假设输入的数组的任意两个数字都互不相同。
+
+输入数组的最后一个数字一定是该二叉树的根节点。而二叉搜索树的特点为，左子树的值一定小于根节点的值，右子树的值一定大于根节点的值。因此，可以通过根节点的值将数组分为左子树和右子树两部分。进而将子树分为左右两部分。以此类推。
+
+```C++
+#include <iostream>
+using namespace std;
+
+bool VerifySequenceOfBST(int* sequence, int length)
+{
+    if(sequence == nullptr || length <= 0)
+    {
+        return false;
+    }
+    int root = sequence[length - 1];
+    // 在二叉搜索树中左子节点的值小于根节点的值。
+    int i = 0;
+    for(; i < length-1; ++i)
+    {
+        if (sequence[i]>root)
+            break;
+    }
+    // 在二叉搜索树中右子树节点的值大于根节点的值
+    int j = i;
+    for(;j < length-1; ++j)
+    {
+        if (sequence[j] < root)
+            return false;
+    }
+    bool left = true;
+    if(i > 0)
+        left = VerifySequenceOfBST(sequence, i);
+    bool right = true;
+    if (i < length - 1)
+        right = VerifySequenceOfBST(sequence + i, length - i - 1);
+    return left && right;
+}
+
+int main()
+{
+    int n = 0;
+    cin >> n;
+    int* nums = new int[n];
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> nums[i];
+    }
+    cout <<  VerifySequenceOfBST(nums, n);
+    return 0;
+}
+```
+
