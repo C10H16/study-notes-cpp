@@ -965,3 +965,84 @@ int main()
 }
 ```
 
+### 复杂链表的复制
+
+> 请实现函数 ComplexListNode* Clone(ComplexListNode* pHead), 复制一个复杂链表。在复杂链表中，每个节点除了有一个m_pNext指针指向下一个节点，还有一个m_pSibling指针指向链表中的任意节点或者nullptr。节点的C++定义如下：
+
+```C++
+struct ComplexListNode
+{
+    int m_nValue;
+    ComplexListNode* m_pNext;
+    ComplexListNode* m_pSibling;
+}
+```
+
+首先复制原始链表上的每个节点N创建N'，然后把这些创建出来的节点用m_pNext链接起来。同时把<N,N'>放到一个哈希表中。第二步，设置复制链表上每个节点的m_pSibling，如果在原始链表中节点N的 m_pSibling指向节点S，那么在复制链表中，对应的N'应该指向S'。可以通过哈希表在O(1) 时间根据S找到S'。
+
+另一种不需要辅助空间的方法是，首先根据原始链表的每个节点创建对应的N'，将N'连接在N的后面。
+
+即，原链表：`A-B-C`，经过第一步之后 `A-A'-B-B'-C-C'`
+
+第二部设置复制出来的节点m_pSibling，假设原始链表上N的m_pSibling指向S，那么N‘的m_pSibling则指向S->m_pNext，即S'。
+
+第三步，将上面的链表拆分成两个链表，奇数节点为原链表，偶数节点为复制出来的链表。
+
+```C++
+void CloneNodes(ComplexListNode* pHead)
+{
+    ComplexListNode* pNode = pHead;
+    while(pNode != nullptr)
+    {
+        ComplexListNode* pCloned = new ComplexListNode();
+        pCloned->m_nValue = pNode->m_nValue;
+        pCloned->m_pNext = pNode->m_pNext;
+        pCloned->m_pSibling = nullptr;
+        pNode->m_pNext = pCloned;
+        pNode=pCloned->m_pNext;
+    }
+}
+void ConnectSiblingNodes(ComplexListNode* pHead)
+{
+    ComplexListNode* pNode = pHead;
+    while(pNode!=nullptr)
+    {
+        ComplexListNode* pCloned = pNode->m_pNext;
+        if (pNode->m_pSibling != nullptr)
+        {
+            pCloned->m_pSibling = pNode->m_pSibling->m_pNext;
+        }
+        pNode = pCloned->m_pNext;
+    }
+}
+ComplexListNode* ReconnectNodes(ComplexListNode* pHead)
+{
+    ComplexListNode* pNode = pHead;
+    ComplexListNode* pClonedHead = nullptr;
+    ComplexListNode* pClonedNode = nullptr;
+    if (pNode != nullptr)
+    {
+        pClonedHead = pClonedNode = pNode->m_pNext;
+        pNode->m_pNext = pClonedNode->m_pNext;
+        pNode=pNode->m_pNext;
+    }
+    while (pNode != nullptr)
+    {
+        pClonedNode->m_pNext = pNode->m_pNext;
+        pClonedNode = pClonedNode->m_pNext;
+        pNode->m_pNext = pClonedNode->m_pNext;
+        pNode = pNode->m_pNext;
+    }
+    return pClonedHead;
+}
+
+ComplexListNode* Clone(ComplexListNode* pHead)
+{
+    CloneNodes(pHead);
+    ConnectSiblingNodes(pHead);
+    return ReconnectNodes(pHead);
+}
+```
+
+
+
