@@ -1232,3 +1232,55 @@ void Deserialize(BinaryTreeNode** pRoot, istream& stream)
 }
 ```
 
+### 字符串的排列
+
+> 输入一个字符串，打印出该字符串中字符的所有序列。
+
+求整个字符串的排列，可以看作第一步求所有可能出现在第一个位置的字符，即把第一个字符和后面所有字符交换，第二步固定第一个字符，求后面所有字符的排列，此时仍将后面的部分看作该部分的第一个字符和后面的字符，把第一个字符逐一和后面的字符进行交换。
+
+```C++
+#include <iostream>
+using namespace std;
+void Permutation(char* pStr, char* pBegin)
+{
+    if (*pBegin=='\0')
+    {
+        cout << pStr << endl;
+    }
+    else
+    {
+        for (char* pCh = pBegin; *pCh != '\0'; ++pCh)
+        {
+            char temp = *pCh;
+            *pCh = *pBegin;
+            *pBegin = temp;
+            Permutation(pStr, pBegin + 1);
+
+            temp = *pCh;
+            *pCh = *pBegin;
+            *pBegin = temp;
+        }
+    }   
+}
+
+void Permutation(char* pStr)
+{
+    if(pStr == nullptr)
+    {
+        return;
+    }
+    Permutation(pStr, pStr);
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    char* str = new char[n+1];
+    cin >> str;
+    str[n] = '\0';
+    Permutation(str);
+    return 0;
+}
+```
+
