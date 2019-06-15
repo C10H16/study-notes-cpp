@@ -85,3 +85,45 @@ int main()
 }
 ```
 
+#### 最小的k个数
+
+> 输入n个整数，找出其中最小的k个数。
+
+##### 解法一：时间复杂度O(n) 的算法，需要修改数组
+
+同样基于快排，随机选取数字，将小于该数字的放到数组作边，大于该数字的放到数组右边，如果调整后该数字的位置为k，则数组作边k个数字就是最小的k个数字。
+
+##### 解法二：时间复杂度O(nlogk)，适合处理海量数据
+
+建立一个包含k个节点的最大堆，扫描数组，如果当前数字小于堆顶，则将当前数字作为堆顶，并调整堆。最终堆中的数字就是最小的k个数字。 可以在O(1)时间内找到堆中的最大值，但是需要O(logk)的时间来完成删除及插入的操作。
+
+使用STL中的 set和 multiset实现（基于红黑树）
+
+```C++
+typedef multiset<int, greater<int> > intSet;
+typedef multiset<int, greater<int> > ::iterator setIterator;
+
+void GetLeastNumbers(const vector<int>& data, intSet& leastNumbers, int k)
+{
+    leastNumbers.clear();
+
+    if (k < 1 || data.size() < k)
+        return;
+    vector<int>::const_iterator iter = data.begin();
+    for (; iter != data.end(); ++iter)
+    {
+        if((leastNumbers.size())<k)
+            leastNumbers.insert(*iter);
+        else
+        {
+            setIterator iterGreatest = leastNumbers.begin();
+            if(*iter < * leastNumbers.begin()))
+            {
+                leastNumbers.erase(iterGreatest);
+                leastNumbers.insert(*iter);
+            }
+        }
+    }
+}
+```
+
