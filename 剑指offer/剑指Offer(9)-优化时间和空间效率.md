@@ -127,3 +127,74 @@ void GetLeastNumbers(const vector<int>& data, intSet& leastNumbers, int k)
 }
 ```
 
+#### 数据流中的中位数
+
+> 如何得到一个数据流中的中位数？
+
+数据是从一个数据流中读出来的，因此数据的数目随着时间的变化而增加。可以使用数组，基于快排的思想，查找中位数，也可以使用其他数据结构，每次插入新元素之后进行调整。
+
+| 数据结构       | 插入的时间复杂度     | 得到中位数的时间复杂度 |
+| -------------- | -------------------- | ---------------------- |
+| 没有排序的数组 | O(1)                 | O(n)                   |
+| 排序的数组     | O(n)                 | O(1)                   |
+| 排序的链表     | O(n)                 | O(1)                   |
+| 二叉搜索树     | 平均O(logn) 最差O(n) | 平均O(logn) 最差O(n)   |
+| AVL树          | O(logn)              | O(1)                   |
+| 最大堆最小堆   | O(logn)              | O(1)                   |
+
+使用最大堆和最小堆，要保证数据平均分配到两个堆中。可以将偶数个数据插入最小堆，奇数个数据插入最大堆。同时，需要保证最大堆中所有数据都要小于最小堆中的数据。如果一个要插入最小堆中的数据比最大堆中的一些数字小，则先将这个数字插入最大堆，取出原来最大堆的堆顶插入最小堆。以保证最小堆中所有数字都比最大堆中的数字大。
+
+```C++
+template<typename T> class DynamicArray
+{
+public:
+    void Insert(T num)
+    {
+        if(((min.size()+max.size()) & 1) == 0)
+        {
+            if(max.size() > 0 && num > max[0])
+            {
+                max.push_back(num);
+                puysh_heap(max.begin(), max.end(), less<T>());
+
+                num = max[0];
+                
+                pop_heap(max.begin(), max.end(), less<T>());
+                max.pop_back();
+            }
+            min.push_back(num);
+            push_heap(min.begin(),min.end(), greater<T>());
+        }
+        else
+        {
+            if (min.size() > 0 && min[0] < num)
+            {
+                min.push_back(num);
+                push_heap(min.begin(), min.end(), greater<T>());
+                num = min[0];
+                pop_heap(min.begin(),min.end(), greater<T>());
+                min.pop_back();
+            }
+            max.push_back(num);
+            push_heap(max.begin(), max.end(), les<T>());
+        }
+    }
+
+    T GetMedian()
+    {
+        int size = min.size() + max.size();
+        if(size == 0)
+            throw("No numberse are available");
+        T median = 0;
+        if((size & 1) == 1)
+            midian = min[0]
+        else
+            median = (min[0] + max[0] /2);
+            return median;
+    }
+private:
+    vector<T> min;
+    vector<T> max;
+}
+```
+
