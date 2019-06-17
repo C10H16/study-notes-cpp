@@ -198,3 +198,48 @@ private:
 }
 ```
 
+#### 连续子数组的最大和
+
+> 输入一个整形数组，数组离有正数也有负数，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
+
+##### 解法一：
+
+从头到尾逐个累加数组中的每个数字。初始化和为0，当累加当前数字后得到的累加和小于当前数组时（累加前的累加和小于0），就丢弃之前的累加值，从当前数字开始累加。
+
+```C++
+bool g_InvalidInput = false;
+
+int FindGreatestSumOfSubArray(int* pData, int nLength)
+{
+    if((pData == nullptr) || (nLength <=0))
+    {
+        g_InvalidInput = true;
+        return 0;
+    }
+
+    g_InvalidInput = false;
+
+    int nCurSum = 0;
+    int nGreatestSum = 0x80000000;
+    for (int i = 0; i < nLength; ++i)
+    {
+        if(nCurSum <=0)
+            nCurSum = pData[i];
+        else
+            nCurSum += pData[i];
+        if (nCurSum > nGreatestSum)
+            nGreatestSum = nCurSum;
+    }
+    return nGreatestSum;
+}
+```
+
+##### 解法二：动态规划法
+
+令 `f(i)` 表示第 `i` 个数字结尾的子数组的最大和，则需要求出 `max[f(i)]`。可以利用递归公式求 `f(i)`
+
+`f(i) = pData[i] i = 0 || f(i-1) <= 0`
+
+`f(i) = f(i-1)+pData[i] i!= 0 && f(i-1)>0` 
+
+这种方法的程序和上面相同。公式中`f(i)` 对应 `nCurSum` 而 `max[f(i)]` 对应 `nGreatestSum`
