@@ -243,3 +243,67 @@ int FindGreatestSumOfSubArray(int* pData, int nLength)
 `f(i) = f(i-1)+pData[i] i!= 0 && f(i-1)>0` 
 
 这种方法的程序和上面相同。公式中`f(i)` 对应 `nCurSum` 而 `max[f(i)]` 对应 `nGreatestSum`
+
+#### 1~n整数中1出现的次数
+
+> 输入一个整数n，求1~n这n个整数的十进制表示中1出现的次数。例如，输入12， 1~12这些整数中包含1的数字有1、10、11、12，1一共出现了5次。
+
+以21345为例，将其分为1~1345和1346~21345。1346~21345中，首先分析1在最高位中的情况。在1346~21345中，1出现在10000~19999这10000个数字的万位中，一共出现了10000次。
+
+需要注意的是，不是所有5位数在万位中出现的次数都是10000次。比如12345，1出现的次数是2345+1=2346次。
+
+接下来分析1出现在最高位之外的其他4位数中的情况。1346~21345这20000个数字中后4位中1出现的次数是8000次，由于最高为是2，可以将其分为1346~11345和11346~21345。每一段剩下的4位数中，选择其中一位是1，其余三位可以在0~9这10个数字中任意选择，因此出现的次数是2\*4\*10^3=8000次。
+
+```C++
+#include <iostream>
+#include <cstring>
+using namespace std;
+int PowerBase10(unsigned int n)
+{
+    int result = 1;
+    for(unsigned int i = 0; i < n; ++i)
+        result *= 10;
+    return result;
+}
+
+int NumberOf1(const char* strN)
+{
+    if(!strN||*strN<'0' || *strN>'9' || *strN == '\0')
+        return 0;
+
+    int first = *strN - '0';
+    unsigned int length = static_cast<unsigned int>(strlen(strN));
+
+    if (length == 1 && first == 0)
+        return 0;
+    if (length == 1 && first > 0)
+        return 1;
+    
+    int numFirstDigit = 0;
+    if (first > 1)
+        numFirstDigit = PowerBase10(length - 1);
+        else if(first == 1)
+            numFirstDigit = atoi(strN + 1) + 1;
+    int numOtherDigits = first* (length - 1)*PowerBase10(length - 2);
+    int numRecursive = NumberOf1(strN+1);
+    return numFirstDigit + numOtherDigits + numRecursive;
+}
+
+int NumberOf1BetweenAndN(int n)
+{
+    if (n <= 0)
+        return 0;
+    char strN[50];
+    sprintf(strN, "%d", n);
+    return NumberOf1(strN);
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    cout << NumberOf1BetweenAndN(n) << endl;
+    return 0;
+}
+```
+
