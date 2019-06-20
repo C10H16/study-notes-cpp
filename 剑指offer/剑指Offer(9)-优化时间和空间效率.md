@@ -307,3 +307,70 @@ int main()
 }
 ```
 
+#### 数字序列中某一位的数字
+
+> 数字以0123456789101112131415......的格式序列化到一个字符序列中，在这个序列中，第5位（从0开始计数）是5，第13位是1，第19位是4等等，请写一个函数，求任意第n位对应的数字。
+
+前10位为0-9，之后的2\*90=180个数字为10~99，再接下来的3\*900=2700个数字为100-999，依照这个规律，可以找出第n位的数字。
+
+```C++
+#include <iostream>
+using namespace std;
+
+int myPow(int x, int y) // 使用math.h中的pow函数再转换为整形时会出现误差
+{
+    int re = x;
+    for (int i = 1; i < y; ++i)
+    {
+        re *= x;
+    }
+    return re;
+}
+int countOfIntegers(int digits)
+{
+    if (digits == 1)
+        return 10;
+    int count = myPow(10, digits-1);
+    return 9*count;
+}
+
+int beginNumber(int digits)
+{
+    if (digits == 1)
+        return 0;
+    return myPow(10, digits-1);
+}
+
+int digitAtIndex(int index, int digits)
+{
+    int number = beginNumber(digits) + index / digits;
+    int indexFromRight= digits- index % digits;
+    for (int i = 1; i < indexFromRight; ++i)
+        number /= 10;
+    return number % 10;
+}
+int digitAtIndex(int index)
+{
+    if (index < 0)
+        return -1;
+    int digits = 1;
+    while(true)
+    {
+        int numbers = countOfIntegers(digits);
+        if(index < numbers * digits)
+            return digitAtIndex(index,digits);
+        index -= digits * numbers;
+        digits++;
+    }
+    return -1;
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    cout << digitAtIndex(n);
+    return 0;
+}
+```
+
