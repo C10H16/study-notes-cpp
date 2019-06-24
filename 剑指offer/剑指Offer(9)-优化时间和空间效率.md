@@ -374,3 +374,51 @@ int main()
 }
 ```
 
+#### 把数组排成最小的数
+
+> 输入一个正整数数组，把数组里所有数字拼接起来拍成一个数。打印能拼接出的所有数字中最小的一个。例如，输入数组{3，32，321}，则打印出这3个数字能排列成的最小数字 321323
+
+两个数字m和n能拼成数字 mn 和 nm，如果 mn < nm，则应打印出 mn，定义此时m<n，反之则定义n<m。如果 mn=nm，则 m=n。拼接时需要考虑拼接成的数字是否会溢出，可以将数字转换为字符串。
+
+```C++
+const int g_MaxNumberLength = 10;
+
+char* g_StrCombine1 = new char[g_MaxNumberLength * 2 + 1];
+char* g_strCombine2 = new char[g_MaxNumberLength * 2 + 1];
+
+int compare(const void* strNumber1, const void* strNumber2)
+{
+    strcpy(g_StrCombine1, *(const char** )strNumber1);
+    strcat(g_StrCombine1, *(const char**)strNumber2);
+    strcpy(g_strCombine2, *(const char**)strNumber2);
+    strcat(g_strCombine2, *(const char**)strNumber1);
+    return strcmp(g_StrCombine1, g_strCombine2);
+}
+
+void PrintMinNumber(int* numbers, int length)
+{
+    if (numbers == nullptr || length <= 0)
+    {
+        return;
+    }
+    char** strNumbers = (char**)(new int[length]);
+    for(int i = 0; i < length; ++i)
+    {
+        strNumbers[i] = new char[g_MaxNumberLength + 1];
+        sprintf(strNumbers[i], "%d", numbers[i]);
+    }
+    qsort(strNumbers, length, sizeof(char*), compare);
+    for(int i = 0; i < length; ++i)
+    {
+        cout << strNumbers[i];
+    }
+    cout << endl;
+    for(int i = 0; i < length; ++i)
+    {
+        delete[] strNumbers[i];
+    }
+    delete[] strNumbers;
+
+}
+```
+
