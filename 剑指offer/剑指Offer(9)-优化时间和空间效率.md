@@ -422,3 +422,82 @@ void PrintMinNumber(int* numbers, int length)
 }
 ```
 
+#### 把数字翻译成字符串
+
+> 给定一个数字，按照如下规则把它翻译成字符串，0翻译成a，1翻译成b……25翻译成z，一个数字可能有多个翻译。实现一个函数计算一个数字有多少种不同的翻译方法。
+
+从数字末尾开始，从右到左翻译并计算不同翻译的数目。用数组counts存储对应每一位开始的字符串有几种翻译方法
+
+例如12258
+
+（1）从末位开始，数字8只有一种情况，8，counts[4] = 1
+
+（2）58也只有一种翻译方法，即在（1）的前面加上数字5，counts[3] =counts[4]= 1
+
+（3）258有两种翻译方法，在（2）前加上数字2或在（1）前加上数字25，因此为counts[2]=counts[3]+ counts[4]= 2
+
+（4）2258有3种翻译方法，对应counts[1]=counts[2]+counts[3]=3
+
+（5）12258有5种翻译方法，对应counts[0]=counts[1]+counts[2]=5
+
+```C++
+#include <iostream>
+#include <string>
+using namespace std;
+
+int GetTransCount(const string& number)
+{
+    int length = number.length();
+    int* counts = new int[length];
+    int count = 0;
+
+    for (int i = length - 1; i >= 0; --i)
+    {
+        count = 0;
+        if (i < length - 1)
+        {
+            count = counts[i + 1];
+        }
+        else
+        {
+            count = 1;
+        }
+
+        if (i < length - 1)
+        {
+            int digit1 = number[i]-'0';
+            int digit2 = number[i+1]-'0';
+            int converted = digit1 * 10 + digit2;
+            if(converted >= 10 && converted <= 25)
+            {
+                if (i < length -2)
+                    count += counts[i+2];
+                else
+                    count += 1;
+            }
+        }
+        counts[i] = count;
+    }
+    count = counts[0];
+    delete[] counts;
+
+    return count;
+}
+
+int GetTransCount(int number)
+{
+    if(number < 0)
+        return 0;
+    string numberInString = to_string(number);
+    return GetTransCount(numberInString);
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    cout << GetTransCount(n);
+    return 0;
+}
+```
+
