@@ -501,3 +501,109 @@ int main()
 }
 ```
 
+#### 礼物的最大价值
+
+> 在一个m*n的棋盘的每一格都有一个礼物，每个礼物都有一定的价值，你可以从棋盘的左上角开始拿格子里的礼物并且每次向右或者向下移动一个，直到到达棋盘的右下角。给定一个棋盘及其上面的礼物，计算你最多能拿到多少价值的礼物。
+
+使用动态规划
+
+假如有如下的一个棋盘
+
+| i\j  | 0    | 1    | 2    | 3    |
+| ---- | ---- | ---- | ---- | ---- |
+| 0    | 1    | 10   | 3    | 8    |
+| 1    | 12   | 2    | 9    | 6    |
+| 2    | 5    | 7    | 4    | 11   |
+| 3    | 3    | 7    | 16   | 5    |
+
+如果要求从\[0\]\[0\]开始到\[3\]\[3\]能拿到多少价值礼物，则子问题为从\[0\]\[0\]到\[3\]\[2\]和从\[0\]\[0\]到\[2\]\[3\]能拿到多少价值礼物中的最优解。定义`f(i,j)`为i*j的棋盘上能拿到礼物的最优解，`v[i][j]`为棋盘`[i][j]`位置上礼物的价值，则`f(i,j)=max(f[i-1][j],f[i][j-1])+v[i][j]`c
+
+```C++
+#include <iostream>
+using namespace std;
+
+int findMaxValue(int **values, int rows, int cols)
+{
+    int **dp = new int*[rows];
+    for(int i = 0; i < rows; ++i)
+    {
+        dp[i] = new int[cols];
+    }
+    for(int i = 1; i < rows; ++i)
+    {   
+        for(int j = 1; j < cols; ++j)
+        {
+            dp[i][j] = 0;
+        }
+    }
+    int sum = 0;
+    for(int i = 0; i < rows; ++i)
+    {
+        sum += values[i][0];
+        dp[i][0] = sum;
+    }
+    sum = values[0][0];
+    for(int j = 1; j < cols; ++j)
+    {
+        sum += values[0][j];
+        dp[0][j] = sum;
+    }
+    for(int i = 1; i < rows; ++i)
+    {
+        for(int j = 1; j < cols; ++j)
+        {
+            dp[i][j] = max(dp[i-1][j],dp[i][j-1])+values[i][j];
+            //cout << dp[i][j] << " ";
+        }
+        //cout << endl;
+    }
+    return dp[rows-1][cols-1];
+}
+
+int main()
+{
+    int rows, cols;
+    cin >> rows >> cols;
+    int **values = new int*[rows];
+    for(int i = 0; i < rows; ++i)
+    {
+        values[i] = new int[cols];
+    }
+    for(int i = 0; i < rows; ++i)
+    {
+        for(int j = 0; j < cols; ++j)
+        {
+            cin >> values[i][j];
+        }
+    }
+    cout << findMaxValue(values, rows, cols);
+    return 0;
+}
+```
+
+对上述代码进行优化，可以使用一个长度为n的一维数组来代替二维数组。因为计算第i,j个格子时只需要`f[i-1][j]`和`f[i][j-1]`的值，因此，只需要一个一维数组，当计算第i行第j个格子时，数组中的前j-1个数保存的是第i行0~j-1列的值，第j~n-1个数保存的是第i-1行j~n-1列的值。
+
+优化后的代码为：
+
+```C++
+int findMaxValue_2(int **values, int rows, int cols)
+{
+    int *dp = new int[cols];
+    int sum = 0;
+    for(int i = 0; i < rows; ++i)
+    {
+        sum += values[i][0];
+        dp[i] = sum;
+    }
+    for(int i = 1; i < rows; ++i)
+    {
+        dp[0]=values[i][0]+dp[0];
+        for(int j = 1; j < cols; ++j)
+        {
+            dp[j] = max(dp[j-1],dp[j])+values[i][j];
+        }
+    }
+    return dp[cols-1];
+}
+```
+
