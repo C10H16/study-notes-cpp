@@ -607,3 +607,55 @@ int findMaxValue_2(int **values, int rows, int cols)
 }
 ```
 
+#### 最长不含重复字符的字符串
+
+> 请从字符串中超出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。假设字符串中只包含‘a’~'z'的字符。
+
+使用动态规划，定义函数`f(i)`表示以第i个字符串结尾的不包含重复字符串的最长长度。从左到右扫描字符串的每个字符。如果第i个字符之前没有出现过，则`f(i)=f(i-1)+1`，否则先计算第i个字符和它上次出现在字符串中的位置和距离，记为d，若d小于或等于`f(i-1)`，此时第i个字符上次出现在`f(i-1)`对应的最长子字符串之中。因此`f(i)=d`。若d大于`f(i-1)`，此时仍然有`f(i)=f(i-1)+1`
+
+```C++
+#include <iostream>
+#include <string>
+using namespace std;
+
+int longestSubstringWithoutDuplication(const string& str)
+{
+    int curLength = 0;
+    int maxLength = 0;
+
+    int* position = new int[26];
+    for (int i = 0; i < 26; i++)
+    {
+        position[i]=-1;
+    }
+
+    for (int i = 0; i < str.length(); ++i)
+    {
+        int prevIndex = position[str[i]-'a'];
+        if (prevIndex < 0 || i - prevIndex > curLength)
+            ++curLength;
+        else
+        {
+            if (curLength > maxLength)
+                maxLength = curLength;
+            curLength = i - prevIndex;
+        }
+        position[str[i]-'a']=i;
+    }
+
+    if (curLength>maxLength)
+        maxLength = curLength;
+    
+    delete[] position;
+    return maxLength;
+}
+
+int main()
+{
+    string s;
+    cin >> s;
+    cout << longestSubstringWithoutDuplication(s);
+    return 0;
+}
+```
+
