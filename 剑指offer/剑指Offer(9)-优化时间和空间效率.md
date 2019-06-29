@@ -659,3 +659,59 @@ int main()
 }
 ```
 
+#### 丑数
+
+> 我们把只包含因子2，3，5的数称为整数，求从小到大顺序的第1500个丑数。习惯上我们把1当作第一个丑数。
+
+可以逐个判断每个整数是不是丑数，但是效率不高。可以将之前求出的丑数存到数组里。根据丑数的定义，一个丑数应该是另一个丑数乘以2、3或5。可以记下当前数组里最大的丑数M。将前面某一个丑数乘以2、3或5，如果结果小于M，则说明这个数已经存在在前面的数组中。
+
+```C++
+#include <iostream>
+using namespace std;
+
+int Min(int n1, int n2, int n3)
+{
+    int min = (n1 < n2)? n1 : n2;
+    min = (min < n3)? min : n3;
+    return min;
+}
+
+int GetUglyNumber(int index)
+{
+    if (index <= 0)
+    {
+        return 0;
+    }
+    int* pUglyNumbers = new int[index];
+    pUglyNumbers[0]=1;
+    int nextUglyIndex = 1;
+    int* pMultiply2 = pUglyNumbers;
+    int* pMultiply3 = pUglyNumbers;
+    int* pMultiply5 = pUglyNumbers;
+
+    while(nextUglyIndex < index)
+    {
+        int min = Min(*pMultiply2*2, *pMultiply3 * 3, *pMultiply5 * 5);
+        pUglyNumbers[nextUglyIndex] = min;
+        while (*pMultiply2 * 2 <= pUglyNumbers[nextUglyIndex])
+            ++pMultiply2;
+        while (*pMultiply3 * 3 <= pUglyNumbers[nextUglyIndex])
+            ++pMultiply3;
+        while (*pMultiply5 * 5 <= pUglyNumbers[nextUglyIndex])
+            ++pMultiply5;
+        ++nextUglyIndex;
+    }
+    int ugly = pUglyNumbers[nextUglyIndex-1];
+    delete[] pUglyNumbers;
+    return ugly;
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    cout << GetUglyNumber(n);
+    return 0;
+}
+```
+
