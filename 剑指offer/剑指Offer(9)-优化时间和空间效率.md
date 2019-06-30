@@ -715,3 +715,91 @@ int main()
 }
 ```
 
+#### 第一个只出现一次的字符
+
+##### 题目一：字符串中第一个只出现一次的字符
+
+> 在字符串中找出第一个只出现一次的字符。
+
+建立一个长度为256的数组，根据字符的ASCII码作为数组的下标对应数组的一个数字，数组中存储每个字符出现的次数。扫描两边字符串，第一遍统计字符出现的次数，第二遍查看该字符出现的次数，找出第一个只出现一次的字符。
+
+```C++
+#include <iostream>
+#include <string>
+#include <map>
+using namespace std;
+
+char FirstNotRepeatingChar(string s)
+{
+    map<char, int> table;
+    for(int i = 0; i < s.size(); ++i)
+    {
+        table[s[i]]++;
+    }
+    int i = 0;
+    while(i < s.size()&&table[s[i]]>1)
+    {
+        ++i;
+    }
+    if (i < s.size())
+        return s[i];
+    else
+    {
+        return '\0';
+    } 
+}
+
+int main()
+{
+    string s;
+    cin >> s;
+    cout << FirstNotRepeatingChar(s);
+    return 0;
+}
+```
+
+##### 题目二：字符流中第一个只出现一次的字符
+
+> 请实现一个函数，用来找出字符流中第一个只出现一次的字符。例如，当从字符流中只读出前两个字符“go”时，第一个只出现一次的字符是'g'，当从字符流中读出前6个字符“google”时，第一个只出现一次的字符是'l'
+
+字符只能一个接一个地从字符流中读出来，可以定义一个数据容器来保存字符在字符流中地位置，当一个字符第一次从字符流中读出来时，把它在字符流中地位置保存到数据容器例，当这个字符再次从字符流中出现时，可以将这个字符忽略。
+
+```C++
+class CharStatistics
+{
+public:
+    CharStatistics() : index(0)
+    {
+        for(int i = 0; i < 256; ++i)
+            occurrence[i]=-1;
+    }
+    void Insert(char ch)
+    {
+        if (occurrence[ch] == -1)
+            occurrence[ch] = index;
+        else if (occurrence[ch] >= 0)
+            occurrence[ch] = -2;
+        index ++;
+    }
+    char FirstAppearingOnce()
+    {
+        char ch = '\0';
+        int minIndex = numeric_limits<int>::max();
+        for (int i = 0; i < 256; ++i)
+        {
+            if (occurrence[i] >= 0 && occurrence[i] < minIndex)
+            {
+                ch = (char)i;
+                minIndex = occurrence[i];
+            }
+        }
+        return ch;
+    }
+private:
+    int occurrence[256];
+    int index;
+};
+```
+
+
+
