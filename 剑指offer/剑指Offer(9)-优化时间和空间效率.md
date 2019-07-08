@@ -877,3 +877,58 @@ int main()
 }
 ```
 
+#### 两个链表的第一个公共节点
+
+> 输入两个链表，找出它们的第一个公共节点。链表节点定义如下：
+
+```C++
+struct ListNode
+{
+    int m_nKey;
+    ListNode* m_pNext;
+}
+```
+
+两个链表从公共节点开始，后面的部分一定是重合的。如果两个链表有公共节点，那么最后一个节点一定是公共节点。从最后一个节点开始往前，就可以找到公共节点。而链表只能从前往后遍历，因此可以使用栈分别存储两个链表的节点，然后一个个出栈比较两个栈顶的节点是否相同。这样的时间复杂度和空间复杂度都是O(m+n)
+
+另一种方法是，分别遍历两个链表得到其长度，就可以知道较长的链表比较短的链表长多少。先遍历若干各较长链表的节点，然后同时在两个链表上遍历，找到的第一个相同的节点就是两个链表的公共节点。
+
+```C++
+unsigned int GetListLength(ListNode* pHead)
+{
+    unsigned int nLength = 0;
+    ListNode* pNode = pHead;
+    while(pNode != nullptr)
+    {
+        ++nLength;
+        pNode = pNode -> m_pNext;
+    }
+    return nLength;
+}
+
+ListNode* FindFirstCommonNode(ListNode* pHead1, ListNode *pHead2)
+{
+    unsigned int nLength1 = GetListLength(pHead1);
+    unsigned int nLength2 = GetListLength(pHead2);
+    int nLengthDif = nLength1 - nLength2;
+    ListNode* pListHeadLong = pHead1;
+    ListNode* pListHeadShort = pHead2;
+    if(nLength2 > nLength1)
+    {
+        pListHeadLong = pHead2;
+        pListHeadShort = pHead1;
+        nLengthDif = nLength2 - nLength1;
+    }
+    for(int i = 0; i < nLengthDif; ++i)
+        pListHeadLong = pListHeadLong->m_pNext;
+
+    while ((pListHeadLong != nullptr) && (pListHeadShort != nullptr) && (pListHeadLong != pListHeadShort))
+    {
+        pListHeadLong = pListHeadLong -> m_pNext;
+        pListHeadShort = pListHeadShort -> m_pNext;
+    }
+    ListNode* pFirstCommonNode = pListHeadLong;
+    return pFirstCommonNode;
+}
+```
+
