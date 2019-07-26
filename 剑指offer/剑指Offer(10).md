@@ -256,3 +256,72 @@ int main()
 }
 ```
 
+### 二叉树的深度
+
+#### 二叉树的深度
+
+> 输入一棵二叉树的根节点，求该树的深度。从根节点到叶节点依次经过的节点（含根、叶节点）形成树的一条路径，最长路径的长度为树的深度。
+
+```C++
+int TreeDepth(BinaryTreeNode* pRoot)
+{
+	if(pRoot == nullptr)
+		return 0;
+	int nLeft = TreeDepth(pRoot->m_pLeft);
+	int nRight = TreeDepth(pRoot->m_pRight);
+	return(nLeft > nRight)? (nLeft+1):(nRight+1);
+}
+```
+
+#### 平衡二叉树
+
+> 输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左、右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
+
+遍历树的每个节点的时候求该节点的深度，如果每个节点的左右子树深度相差不超过1，则为平衡二叉树。由于每个节点都会被遍历多次，因此时间效率不高。
+
+```C++
+bool IsBalanced(BinaryTreeNode* pRoot)
+{
+    if (pRoot == nullptr)
+    {
+        return true;
+    }
+    int left = TreeDepth(pRoot->m_pLeft);
+    int right = TreeDepth(pRoot->m_pRight);
+    int diff = left - right;
+    if (diff > 1 || diff < -1)
+        return false;
+    return IsBalanced(pRoot->m_pLeft)&&IsBalanced(pRoot->m_pRight);
+}
+```
+
+利用后序遍历的方法遍历整颗二叉树，在遍历每个节点的时候记录其深度，就可以一边遍历一遍判断每个节点是不是平衡的
+
+```C++
+bool IsBalanced(BinaryTreeNode* pRoot, int* pDepth)
+{
+	if(pRoot == nullptr)
+	{
+		*pDepth = 0;
+		return true;
+	}
+	int left, right;
+	if(IsBalanced(pRoot->m_pLeft,&left) && IsBalanced(pRoot->m_pRight, &right))
+	{
+		int diff = left - right;
+		if (diff <=1 && diff >= -1)
+		{
+			*pDepth = 1+(left > right? left : right);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool IsBalanced(BinaryTreeNode* pRoot)
+{
+	int depth = 0;
+	return IsBalanced(pRoot, &depth);
+}
+```
+
